@@ -1,0 +1,6 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Albums"
+                    xmlns:vm="clr-namespace:Albums.ViewModels">
+     <vm:AlbumViewModel  x:Key="mainViewModel"/>
+</ResourceDictionary>

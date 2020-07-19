@@ -1,0 +1,70 @@
+﻿<Window x:Class="Albums.Views.PhotoView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Albums.Views"
+        mc:Ignorable="d"
+        xmlns:mw="Views\MainWindow.xaml"
+        xmlns:models="clr-namespace:Albums.Models"
+        Title="PhotoView" Height="450" Width="800" Background="Black">
+    <!--<Window.DataContext>
+        <models:Album x:Name="showAlbum"/>
+    </Window.DataContext>-->
+    <Window.Resources>
+    <Style TargetType="Button" BasedOn="{StaticResource UsersElement}">
+            <Setter Property="Background" Value="White"/>
+           
+            <Setter Property="Opacity" Value=" 0.03"/>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="MouseEnter">
+                <EventTrigger.Actions>
+                    <BeginStoryboard>
+                        <Storyboard  >
+                                <DoubleAnimation  Storyboard.TargetProperty="Opacity" To="0.3" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger.Actions>
+            </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard  >
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"  To="0.03" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+            </Style.Triggers>
+    </Style>
+    </Window.Resources>
+    <Grid>
+
+       
+        <Image Grid.Column="1"  Source="{Binding Path=SelectedPhoto.Path}" Margin="0,0,0,10" Grid.RowSpan="2"/>
+        <Button x:Name="Prev" Height="80" Click="Prev_Click" HorizontalAlignment="Left" Width="50"  >
+            <Button.Content>
+                
+                    <Polygon
+                Margin="2"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Fill="Black"
+                Points="20,0 0,15, 20,30" />
+                
+            </Button.Content>
+        </Button>
+        <Button x:Name="Next" HorizontalAlignment="Right"    Height="80" Width="50" Click="Next_Click" >
+            <Button.Content>
+               
+                    <Polygon
+                Margin="2"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Fill="Black"
+                Points="0,0 20,15, 0,30" />
+            
+            </Button.Content>
+        </Button>
+    </Grid>
+</Window>

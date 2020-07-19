@@ -1,0 +1,214 @@
+﻿<Window x:Class="Albums.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Albums"
+        xmlns:wp="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
+        xmlns:vm="clr-namespace:Albums.ViewModels"
+        xmlns:model="clr-namespace:Albums.Models"
+        mc:Ignorable="d"
+         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        Title="Albums" Height="450" Width="800" Closing="Window_Closing" Background="{StaticResource BackColor}">
+
+
+    <Window.Resources>
+        <ObjectDataProvider
+            x:Key="OverlayService"
+            MethodName="GetInstance"
+            ObjectType="{x:Type model:OverlayService}" />
+    </Window.Resources>
+    
+    <Window.DataContext>
+        <vm:AlbumViewModel x:Name="main"/>
+    </Window.DataContext>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="AUTO"/>
+        <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+
+    <StackPanel >
+            
+                <Button Command="{Binding AddAlbumCmd}" >Создать альбом</Button>
+            <Button Command="{Binding RenameCmd}" CommandParameter="{Binding SelectedAlbum}">Переименовать</Button>
+            <Button  Command="{Binding ExportAlbumCmd}" 
+                     CommandParameter="{Binding SelectedAlbum}"
+                   
+                      Content="Экспортировать"></Button>
+            <Button Command="{Binding RemoveAlbumCmd}" 
+            CommandParameter="{Binding SelectedAlbum}" >Удалить альбом</Button>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ContentControl  Style="{StaticResource UsersElement}" Margin="0" Content="{StaticResource SearchIcon}" Width="35" Height="35"/>
+
+                <TextBox MaxLines="10" MaxWidth="80" Grid.Column="1" Margin="0,0,4,0" Tag="Поиск..." TextWrapping="Wrap" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"> </TextBox>
+                
+            </Grid>
+    </StackPanel>
+      
+        <ListBox Grid.Column="0" 
+                 Name="AlbumList"
+                 Grid.Row="1" 
+                 ItemsSource="{Binding AlbumsView}"
+                 SelectedItem="{Binding SelectedAlbum, Mode=TwoWay}" 
+                Background="{StaticResource BackColor}" 
+                 BorderBrush="{StaticResource BackColor}" 
+                 >
+            <ListBox.ItemContainerStyle>
+                <Style  TargetType="ListBoxItem"  BasedOn="{StaticResource UsersElement}">
+                    <Setter Property="Background" Value="{StaticResource BackColor}"/>
+                    <Setter Property="Template" Value="{StaticResource LBItem}"/>
+
+
+                    <Style.Triggers>
+
+
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" Value="#f7baa2"/>
+                            <Setter Property="Foreground" Value="{StaticResource BackColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Background" Value="#f7baa2"/>
+                            <Setter Property="Foreground" Value="{StaticResource BackColor}"/>
+                        </Trigger>
+
+
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+                <VirtualizingStackPanel/>
+            </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+        </ListBox>
+
+     <Border Grid.Column="1" 
+                CornerRadius="15,15,0,0" 
+                Background="{StaticResource Workspace}"
+          Grid.RowSpan="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition  Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="3"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="2"  >
+
+                    <Button  Command="{Binding  Path=AddPhotoCmd}" CommandParameter="{Binding SelectedAlbum}">Добавить фото</Button>
+                    <Button  Command="{Binding RemovePhotoCmd}"  CommandParameter="{Binding ElementName=PhotoList, Path=SelectedItems}">Удалить фото</Button>
+                    <Button Command="{Binding Path=OpenDirCmd}" CommandParameter="{Binding Path=SelectedAlbum.SelectedPhoto}">Открыть пакаку</Button>
+                    <Button Command="{Binding ExportPhotoCmd}" CommandParameter="{Binding Path=SelectedAlbum}" >Экспортировать фото</Button>
+
+                </StackPanel>
+                <Image Grid.Row="1"  Source="{Binding SelectedAlbum.SelectedPhoto.Path}">
+                </Image>
+                <GridSplitter Background="{StaticResource BackColor}" Grid.Row="2" Height="3" Width="auto" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+
+                <ListBox x:Name="PhotoList" 
+       
+                    Grid.Row="3"   
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"   
+                    ItemsSource="{Binding Path=SelectedAlbum.Photos}"
+                    SelectedItem="{Binding Path=SelectedAlbum.SelectedPhoto}"
+                    Background="{StaticResource Workspace}"
+                    BorderBrush="{StaticResource Workspace}"
+                     SelectionMode="Extended">
+                    <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseDoubleClick">
+                                        <i:InvokeCommandAction 
+                                         Command="{Binding  Path=ShowPhotoCmd}"
+                                          CommandParameter="{Binding Path=SelectedAlbum.SelectedPhoto}" />
+                                         
+                                    </i:EventTrigger>
+                      
+                                </i:Interaction.Triggers>
+                     <ListBox.ItemTemplate>
+                         
+
+
+                        <DataTemplate>
+                            <Image Width="100" Height="100" Source="{Binding Path=TemplateImage}">
+                                <Image.ToolTip>
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                        <TextBlock>Название: </TextBlock>
+                                            <TextBlock Text="{Binding Path=Name}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock>Путь: </TextBlock>
+                                            <TextBlock Text="{Binding Path=Dir}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock>Дата создания: </TextBlock>
+                                            <TextBlock Text="{Binding Path=DateCreate}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Image.ToolTip>
+                           </Image>                        
+                        </DataTemplate>
+                     </ListBox.ItemTemplate>
+                     <ListBox.ItemsPanel>
+                           <ItemsPanelTemplate>
+                                <wp:VirtualizingWrapPanel />
+                           </ItemsPanelTemplate>
+                     </ListBox.ItemsPanel>
+                </ListBox>
+            </Grid> 
+     </Border>
+
+
+        <Grid 
+            Grid.RowSpan="2"
+            Name="overlay"
+            Grid.ColumnSpan="2"
+            Background="#7F302E31">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=overlayText, Path=Text}" Value="">
+                            <Setter Property="Visibility" Value="Hidden" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <Border
+                Width="500"
+                Height="300"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="#cd6272"
+                CornerRadius="7">
+                <Grid>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock
+                            Name="overlayText"
+                            FontSize="30"
+                            Text="{Binding Source={StaticResource OverlayService}, Path=Text}"
+                            TextAlignment="Center" />
+                        <ProgressBar
+                            Height="20"
+                            Margin="20"
+                            Background="{StaticResource BackColor}"
+                            BorderThickness="0"
+                            Foreground="WhiteSmoke"
+                            IsIndeterminate="True" />
+
+
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
